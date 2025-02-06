@@ -1,115 +1,282 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
+class MyApp extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool _isLoggedIn = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus();
   }
-}
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
+  void _checkLoginStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool loggedIn = prefs.getBool('isLoggedIn') ?? false;
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      _isLoggedIn = loggedIn;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    return MaterialApp(
+      home: _isLoggedIn ? HomeScreen() : InitialScreen(),
+    );
+  }
+}
+
+class InitialScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
+      appBar: AppBar(title: Text('Welcome')),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => LoginScreen()),
+            );
+          },
+          child: Text('Go to Login'),
+        ),
+      ),
+    );
+  }
+}
+
+class LoginScreen extends StatefulWidget {
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _usernameCAController = TextEditingController();
+  final  _passwordCAController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _usernameLIController = TextEditingController();
+  final TextEditingController _passwordLIController = TextEditingController();
+
+  String _userWarnCA = '';
+  String _passWarnCA = '';
+  String _conPassWarnCA = '';
+  String _userWarnLI = '';
+  String _passWarnLI = '';
+
+  bool _isLoggedIn = false;
+  String? _loggedInUser;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus();
+  }
+
+  Future<void> _checkLoginStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isLoggedIn = prefs.getBool("isLoggedIn") ?? false;
+    final loggedInUser = prefs.getString("loggedInUser");
+
+    setState(() {
+      _isLoggedIn = isLoggedIn;
+      _loggedInUser = loggedInUser;
+    });
+  }
+
+  Future<void> _createAccount() async {
+    final prefs = await SharedPreferences.getInstance();
+    String username = _usernameCAController.text;
+    String password = _passwordCAController.text;
+    String confirmPassword = _confirmPasswordController.text;
+
+    setState(() {
+      _userWarnCA = '';
+      _passWarnCA = '';
+      _conPassWarnCA = '';
+    });
+
+    if (username.isEmpty) {
+      setState(() => _userWarnCA = "Insert Username");
+      return;
+    } else if (prefs.containsKey(username)) {
+      setState(() => _userWarnCA = "Username taken!");
+      return;
+    } else if (password.length < 8) {
+      setState(() => _passWarnCA = "Password must be at least 8 characters!");
+      return;
+    } else if (confirmPassword != password) {
+      setState(() => _conPassWarnCA = "Passwords do not match!");
+      return;
+    }
+
+    // Save user credentials
+    await prefs.setString(username, password);
+    await prefs.setBool("isLoggedIn", true);
+    await prefs.setString("loggedInUser", username);
+
+    setState(() {
+      _isLoggedIn = true;
+      _loggedInUser = username;
+    });
+  }
+
+  Future<void> _login() async {
+    final prefs = await SharedPreferences.getInstance();
+    String username = _usernameLIController.text;
+    String password = _passwordLIController.text;
+
+    setState(() {
+      _userWarnLI = '';
+      _passWarnLI = '';
+    });
+
+    if (username.isEmpty) {
+      setState(() => _userWarnLI = "Insert Username");
+      return;
+    } else if (password.isEmpty) {
+      setState(() => _passWarnLI = "Insert Password");
+      return;
+    } else if (prefs.getString(username) == password) {
+      await prefs.setBool("isLoggedIn", true);
+      await prefs.setString("loggedInUser", username);
+
+      setState(() {
+        _isLoggedIn = true;
+        _loggedInUser = username;
+      });
+    } else {
+      setState(() => _passWarnLI = "Incorrect login information");
+    }
+  }
+
+  Future<void> _logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove("isLoggedIn");
+    await prefs.remove("loggedInUser");
+
+    setState(() {
+      _isLoggedIn = false;
+      _loggedInUser = null;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.purple[300],
+      body: Center(
+        child: _isLoggedIn ? _buildUserInfo() : _buildLoginSection(),
+      ),
+    );
+  }
+
+  Widget _buildLoginSection() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
+          children: [
             Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+              "User Information",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
             ),
+            SizedBox(height: 20),
+            _buildCreateAccountSection(),
+            SizedBox(height: 20),
+            _buildLoginSectionFields(),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  Widget _buildCreateAccountSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("Create an account", style: TextStyle(fontSize: 20, color: Colors.white)),
+        TextField(controller: _usernameCAController, decoration: InputDecoration(hintText: "Username")),
+        Text(_userWarnCA, style: TextStyle(color: Colors.red)),
+        TextField(controller: _passwordCAController, obscureText: true, decoration: InputDecoration(hintText: "Password")),
+        Text(_passWarnCA, style: TextStyle(color: Colors.red)),
+        TextField(controller: _confirmPasswordController, obscureText: true, decoration: InputDecoration(hintText: "Confirm Password")),
+        Text(_conPassWarnCA, style: TextStyle(color: Colors.red)),
+        SizedBox(height: 10),
+        ElevatedButton(onPressed: _createAccount, child: Text("Create Account")),
+      ],
+    );
+  }
+
+  Widget _buildLoginSectionFields() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text("Already have an account? Log in!", style: TextStyle(fontSize: 20, color: Colors.white)),
+        TextField(controller: _usernameLIController, decoration: InputDecoration(hintText: "Username")),
+        Text(_userWarnLI, style: TextStyle(color: Colors.red)),
+        TextField(controller: _passwordLIController, obscureText: true, decoration: InputDecoration(hintText: "Password")),
+        Text(_passWarnLI, style: TextStyle(color: Colors.red)),
+        SizedBox(height: 10),
+        ElevatedButton(onPressed: _login, child: Text("Log in")),
+        Padding(
+          padding: const EdgeInsets.only(top: 20.0), // Adds 20 pixels of padding at the top
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => InitialScreen()),
+              );
+            },
+            child: Text('Back to Home'),
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _buildUserInfo() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text("Welcome, $_loggedInUser!", style: TextStyle(fontSize: 24, color: Colors.white)),
+        SizedBox(height: 10),
+        ElevatedButton(onPressed: _logout, child: Text("Log out")),
+      ],
+    );
+  }
+}
+
+class HomeScreen extends StatelessWidget {
+  void _logout(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', false);
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => InitialScreen()),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Home')),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () => _logout(context),
+          child: Text('Logout'),
+        ),
+      ),
     );
   }
 }
