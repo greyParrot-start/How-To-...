@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+//testing
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -36,10 +38,12 @@ class _MyAppState extends State<MyApp> {
 }
 
 class InitialScreen extends StatelessWidget {
+  const InitialScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Welcome')),
+      appBar: AppBar(title: const Text('Welcome')),
       body: Container(
         color: const Color.fromARGB(255, 136, 51, 248), // Replace with any color you prefer
         child: Center(
@@ -50,7 +54,7 @@ class InitialScreen extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => LoginScreen()),
               );
             },
-            child: Text('Go to Login'),
+            child: const Text('Go to Login'),
           ),
         ),
       ),
@@ -59,6 +63,8 @@ class InitialScreen extends StatelessWidget {
 }
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -190,13 +196,13 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               "User Information",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildCreateAccountSection(),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _buildLoginSectionFields(),
           ],
         ),
@@ -208,15 +214,15 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Create an account", style: TextStyle(fontSize: 20, color: Colors.white)),
-        TextField(controller: _usernameCAController, decoration: InputDecoration(hintText: "Username")),
-        Text(_userWarnCA, style: TextStyle(color: Colors.red)),
-        TextField(controller: _passwordCAController, obscureText: true, decoration: InputDecoration(hintText: "Password")),
-        Text(_passWarnCA, style: TextStyle(color: Colors.red)),
-        TextField(controller: _confirmPasswordController, obscureText: true, decoration: InputDecoration(hintText: "Confirm Password")),
-        Text(_conPassWarnCA, style: TextStyle(color: Colors.red)),
-        SizedBox(height: 10),
-        ElevatedButton(onPressed: _createAccount, child: Text("Create Account")),
+        const Text("Create an account", style: TextStyle(fontSize: 20, color: Colors.white)),
+        TextField(controller: _usernameCAController, decoration: const InputDecoration(hintText: "Username")),
+        Text(_userWarnCA, style: const TextStyle(color: Colors.red)),
+        TextField(controller: _passwordCAController, obscureText: true, decoration: const InputDecoration(hintText: "Password")),
+        Text(_passWarnCA, style: const TextStyle(color: Colors.red)),
+        TextField(controller: _confirmPasswordController, obscureText: true, decoration: const InputDecoration(hintText: "Confirm Password")),
+        Text(_conPassWarnCA, style: const TextStyle(color: Colors.red)),
+        const SizedBox(height: 10),
+        ElevatedButton(onPressed: _createAccount, child: const Text("Create Account")),
       ],
     );
   }
@@ -225,13 +231,13 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Already have an account? Log in!", style: TextStyle(fontSize: 20, color: Colors.white)),
-        TextField(controller: _usernameLIController, decoration: InputDecoration(hintText: "Username")),
-        Text(_userWarnLI, style: TextStyle(color: Colors.red)),
-        TextField(controller: _passwordLIController, obscureText: true, decoration: InputDecoration(hintText: "Password")),
-        Text(_passWarnLI, style: TextStyle(color: Colors.red)),
-        SizedBox(height: 10),
-        ElevatedButton(onPressed: _login, child: Text("Log in")),
+        const Text("Already have an account? Log in!", style: TextStyle(fontSize: 20, color: Colors.white)),
+        TextField(controller: _usernameLIController, decoration: const InputDecoration(hintText: "Username")),
+        Text(_userWarnLI, style: const TextStyle(color: Colors.red)),
+        TextField(controller: _passwordLIController, obscureText: true, decoration: const InputDecoration(hintText: "Password")),
+        Text(_passWarnLI, style: const TextStyle(color: Colors.red)),
+        const SizedBox(height: 10),
+        ElevatedButton(onPressed: _login, child: const Text("Log in")),
         Padding(
           padding: const EdgeInsets.only(top: 20.0), // Adds 20 pixels of padding at the top
           child: ElevatedButton(
@@ -241,7 +247,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 MaterialPageRoute(builder: (context) => InitialScreen()),
               );
             },
-            child: Text('Back to Home'),
+            child: const Text('Back to Home'),
           ),
         )
       ],
@@ -252,9 +258,9 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text("Welcome, $_loggedInUser!", style: TextStyle(fontSize: 24, color: Colors.white)),
-        SizedBox(height: 10),
-        ElevatedButton(onPressed: _logout, child: Text("Log out")),
+        Text("Welcome, $_loggedInUser!", style: const TextStyle(fontSize: 24, color: Colors.white)),
+        const SizedBox(height: 10),
+        ElevatedButton(onPressed: _logout, child: const Text("Log out")),
         Padding(
           padding: const EdgeInsets.only(top: 20.0), // Adds 20 pixels of padding at the top
           child: ElevatedButton(
@@ -264,7 +270,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 MaterialPageRoute(builder: (context) => InitialScreen()),
               );
             },
-            child: Text('Back to Home'),
+            child: const Text('Back to Home'),
           ),
         )
       ],
@@ -273,6 +279,8 @@ class _LoginScreenState extends State<LoginScreen> {
 }
 
 class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
   void _logout(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isLoggedIn', false);
@@ -285,11 +293,11 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Home')),
+      appBar: AppBar(title: const Text('Home')),
       body: Center(
         child: ElevatedButton(
           onPressed: () => _logout(context),
-          child: Text('Logout'),
+          child: const Text('Logout'),
         ),
       ),
     );
