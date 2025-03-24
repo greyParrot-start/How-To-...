@@ -1,25 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-//testing
+
+
 void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
 
+class MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
 }
 
+
 class _MyAppState extends State<MyApp> {
   bool _isLoggedIn = false;
+
 
   @override
   void initState() {
     super.initState();
     _checkLoginStatus();
   }
+
 
   void _checkLoginStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -29,6 +32,7 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -37,13 +41,12 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-class InitialScreen extends StatelessWidget {
-  const InitialScreen({super.key});
 
+class InitialScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Welcome')),
+      appBar: AppBar(title: Text('Welcome')),
       body: Container(
         color: const Color.fromARGB(255, 136, 51, 248), // Replace with any color you prefer
         child: Center(
@@ -54,7 +57,7 @@ class InitialScreen extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => LoginScreen()),
               );
             },
-            child: const Text('Go to Login'),
+            child: Text('Go to Login'),
           ),
         ),
       ),
@@ -62,12 +65,12 @@ class InitialScreen extends StatelessWidget {
   }
 }
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
 
+class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
+
 
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _usernameCAController = TextEditingController();
@@ -76,14 +79,17 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _usernameLIController = TextEditingController();
   final TextEditingController _passwordLIController = TextEditingController();
 
+
   String _userWarnCA = '';
   String _passWarnCA = '';
   String _conPassWarnCA = '';
   String _userWarnLI = '';
   String _passWarnLI = '';
 
+
   bool _isLoggedIn = false;
   String? _loggedInUser;
+
 
   @override
   void initState() {
@@ -91,10 +97,12 @@ class _LoginScreenState extends State<LoginScreen> {
     _checkLoginStatus();
   }
 
+
   Future<void> _checkLoginStatus() async {
     final prefs = await SharedPreferences.getInstance();
     final isLoggedIn = prefs.getBool("isLoggedIn") ?? false;
     final loggedInUser = prefs.getString("loggedInUser");
+
 
     setState(() {
       _isLoggedIn = isLoggedIn;
@@ -102,17 +110,20 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
+
   Future<void> _createAccount() async {
     final prefs = await SharedPreferences.getInstance();
     String username = _usernameCAController.text;
     String password = _passwordCAController.text;
     String confirmPassword = _confirmPasswordController.text;
 
+
     setState(() {
       _userWarnCA = '';
       _passWarnCA = '';
       _conPassWarnCA = '';
     });
+
 
     if (username.isEmpty) {
       setState(() => _userWarnCA = "Insert Username");
@@ -128,10 +139,12 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
+
     // Save user credentials
     await prefs.setString(username, password);
     await prefs.setBool("isLoggedIn", true);
     await prefs.setString("loggedInUser", username);
+
 
     setState(() {
       _isLoggedIn = true;
@@ -139,15 +152,18 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
+
   Future<void> _login() async {
     final prefs = await SharedPreferences.getInstance();
     String username = _usernameLIController.text;
     String password = _passwordLIController.text;
 
+
     setState(() {
       _userWarnLI = '';
       _passWarnLI = '';
     });
+
 
     if (username.isEmpty) {
       setState(() => _userWarnLI = "Insert Username");
@@ -159,6 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
       await prefs.setBool("isLoggedIn", true);
       await prefs.setString("loggedInUser", username);
 
+
       setState(() {
         _isLoggedIn = true;
         _loggedInUser = username;
@@ -168,16 +185,19 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+
   Future<void> _logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove("isLoggedIn");
     await prefs.remove("loggedInUser");
+
 
     setState(() {
       _isLoggedIn = false;
       _loggedInUser = null;
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -189,6 +209,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+
   Widget _buildLoginSection() {
     return SingleChildScrollView(
       child: Padding(
@@ -196,13 +217,13 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
+            Text(
               "User Information",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             _buildCreateAccountSection(),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             _buildLoginSectionFields(),
           ],
         ),
@@ -210,34 +231,36 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+
   Widget _buildCreateAccountSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text("Create an account", style: TextStyle(fontSize: 20, color: Colors.white)),
-        TextField(controller: _usernameCAController, decoration: const InputDecoration(hintText: "Username")),
-        Text(_userWarnCA, style: const TextStyle(color: Colors.red)),
-        TextField(controller: _passwordCAController, obscureText: true, decoration: const InputDecoration(hintText: "Password")),
-        Text(_passWarnCA, style: const TextStyle(color: Colors.red)),
-        TextField(controller: _confirmPasswordController, obscureText: true, decoration: const InputDecoration(hintText: "Confirm Password")),
-        Text(_conPassWarnCA, style: const TextStyle(color: Colors.red)),
-        const SizedBox(height: 10),
-        ElevatedButton(onPressed: _createAccount, child: const Text("Create Account")),
+        Text("Create an account", style: TextStyle(fontSize: 20, color: Colors.white)),
+        TextField(controller: _usernameCAController, decoration: InputDecoration(hintText: "Username")),
+        Text(_userWarnCA, style: TextStyle(color: Colors.red)),
+        TextField(controller: _passwordCAController, obscureText: true, decoration: InputDecoration(hintText: "Password")),
+        Text(_passWarnCA, style: TextStyle(color: Colors.red)),
+        TextField(controller: _confirmPasswordController, obscureText: true, decoration: InputDecoration(hintText: "Confirm Password")),
+        Text(_conPassWarnCA, style: TextStyle(color: Colors.red)),
+        SizedBox(height: 10),
+        ElevatedButton(onPressed: _createAccount, child: Text("Create Account")),
       ],
     );
   }
+
 
   Widget _buildLoginSectionFields() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text("Already have an account? Log in!", style: TextStyle(fontSize: 20, color: Colors.white)),
-        TextField(controller: _usernameLIController, decoration: const InputDecoration(hintText: "Username")),
-        Text(_userWarnLI, style: const TextStyle(color: Colors.red)),
-        TextField(controller: _passwordLIController, obscureText: true, decoration: const InputDecoration(hintText: "Password")),
-        Text(_passWarnLI, style: const TextStyle(color: Colors.red)),
-        const SizedBox(height: 10),
-        ElevatedButton(onPressed: _login, child: const Text("Log in")),
+        Text("Already have an account? Log in!", style: TextStyle(fontSize: 20, color: Colors.white)),
+        TextField(controller: _usernameLIController, decoration: InputDecoration(hintText: "Username")),
+        Text(_userWarnLI, style: TextStyle(color: Colors.red)),
+        TextField(controller: _passwordLIController, obscureText: true, decoration: InputDecoration(hintText: "Password")),
+        Text(_passWarnLI, style: TextStyle(color: Colors.red)),
+        SizedBox(height: 10),
+        ElevatedButton(onPressed: _login, child: Text("Log in")),
         Padding(
           padding: const EdgeInsets.only(top: 20.0), // Adds 20 pixels of padding at the top
           child: ElevatedButton(
@@ -247,20 +270,21 @@ class _LoginScreenState extends State<LoginScreen> {
                 MaterialPageRoute(builder: (context) => InitialScreen()),
               );
             },
-            child: const Text('Back to Home'),
+            child: Text('Back to Home'),
           ),
         )
       ],
     );
   }
 
+
   Widget _buildUserInfo() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text("Welcome, $_loggedInUser!", style: const TextStyle(fontSize: 24, color: Colors.white)),
-        const SizedBox(height: 10),
-        ElevatedButton(onPressed: _logout, child: const Text("Log out")),
+        Text("Welcome, $_loggedInUser!", style: TextStyle(fontSize: 24, color: Colors.white)),
+        SizedBox(height: 10),
+        ElevatedButton(onPressed: _logout, child: Text("Log out")),
         Padding(
           padding: const EdgeInsets.only(top: 20.0), // Adds 20 pixels of padding at the top
           child: ElevatedButton(
@@ -270,7 +294,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 MaterialPageRoute(builder: (context) => InitialScreen()),
               );
             },
-            child: const Text('Back to Home'),
+            child: Text('Back to Home'),
           ),
         )
       ],
@@ -278,9 +302,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
 
+class HomeScreen extends StatelessWidget {
   void _logout(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isLoggedIn', false);
@@ -290,16 +313,103 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Home')),
+      appBar: AppBar(title: Text('Home')),
       body: Center(
-        child: ElevatedButton(
-          onPressed: () => _logout(context),
-          child: const Text('Logout'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () => _logout(context),
+              child: Text('Logout'),
+            ),
+            SizedBox(height: 20), // Adds spacing between buttons
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AboutUsScreen()),
+                );
+              },
+              child: Text('About Us'),
+            ),
+          ],
         ),
       ),
+    );
+  }
+}
+class AboutUsScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("About Us"),
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildSectionTitle("Our Goal"),
+            _buildParagraph("Change this as you'd like"),
+            Divider(),
+            _buildSectionTitle("Who We Are"),
+            _buildParagraph("Change this as you'd like"),
+            SizedBox(height: 10),
+            /*
+            Center(
+              child: Image.asset(
+                'assets/logo.png',
+                height: 80,
+              ),
+            ),
+            */
+            // This will be to add the ATECh logo
+            Divider(),
+            _buildSectionTitle("Developers"),
+            _buildBulletList([
+              "Developer 1",
+              "Developer 2",
+              "Developer 3",
+              "Developer 4",
+            ]),
+          ],
+        ),
+      ),
+    );
+  }
+
+
+  Widget _buildSectionTitle(String title) {
+    return Text(
+      title,
+      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+    );
+  }
+
+
+  Widget _buildParagraph(String text) {
+    return Text(
+      text,
+      style: TextStyle(fontSize: 16),
+    );
+  }
+
+
+  Widget _buildBulletList(List<String> items) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: items
+          .map((item) => Padding(
+                padding: const EdgeInsets.only(left: 8.0, top: 4.0),
+                child: Text("• $item", style: TextStyle(fontSize: 16)),
+              ))
+          .toList(),
     );
   }
 }
