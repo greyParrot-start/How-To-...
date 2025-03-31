@@ -1,28 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 void main() {
   runApp(MyApp());
 }
-
 
 class MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
 }
 
-
 class _MyAppState extends State<MyApp> {
   bool _isLoggedIn = false;
-
 
   @override
   void initState() {
     super.initState();
     _checkLoginStatus();
   }
-
 
   void _checkLoginStatus() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -32,7 +27,6 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -41,36 +35,55 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-
 class InitialScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Welcome')),
-      body: Container(
-        color: const Color.fromARGB(255, 136, 51, 248), // Replace with any color you prefer
-        child: Center(
-          child: ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => LoginScreen()),
-              );
-            },
-            child: Text('Go to Login'),
-          ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginScreen()),
+                );
+              },
+              child: Text('Go to Login'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CalTrackerScreen()),
+                );
+              },
+              child: Text('Go to Cal-Tracker'),
+            ),
+            SizedBox(height: 20), // Adds spacing
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AboutUsScreen()),
+                );
+              },
+              child: Text('About Us'),
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
-
 
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _usernameCAController = TextEditingController();
@@ -79,17 +92,14 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _usernameLIController = TextEditingController();
   final TextEditingController _passwordLIController = TextEditingController();
 
-
   String _userWarnCA = '';
   String _passWarnCA = '';
   String _conPassWarnCA = '';
   String _userWarnLI = '';
   String _passWarnLI = '';
 
-
   bool _isLoggedIn = false;
   String? _loggedInUser;
-
 
   @override
   void initState() {
@@ -97,12 +107,10 @@ class _LoginScreenState extends State<LoginScreen> {
     _checkLoginStatus();
   }
 
-
   Future<void> _checkLoginStatus() async {
     final prefs = await SharedPreferences.getInstance();
     final isLoggedIn = prefs.getBool("isLoggedIn") ?? false;
     final loggedInUser = prefs.getString("loggedInUser");
-
 
     setState(() {
       _isLoggedIn = isLoggedIn;
@@ -110,20 +118,17 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-
   Future<void> _createAccount() async {
     final prefs = await SharedPreferences.getInstance();
     String username = _usernameCAController.text;
     String password = _passwordCAController.text;
     String confirmPassword = _confirmPasswordController.text;
 
-
     setState(() {
       _userWarnCA = '';
       _passWarnCA = '';
       _conPassWarnCA = '';
     });
-
 
     if (username.isEmpty) {
       setState(() => _userWarnCA = "Insert Username");
@@ -139,12 +144,10 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-
     // Save user credentials
     await prefs.setString(username, password);
     await prefs.setBool("isLoggedIn", true);
     await prefs.setString("loggedInUser", username);
-
 
     setState(() {
       _isLoggedIn = true;
@@ -152,18 +155,15 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-
   Future<void> _login() async {
     final prefs = await SharedPreferences.getInstance();
     String username = _usernameLIController.text;
     String password = _passwordLIController.text;
 
-
     setState(() {
       _userWarnLI = '';
       _passWarnLI = '';
     });
-
 
     if (username.isEmpty) {
       setState(() => _userWarnLI = "Insert Username");
@@ -175,7 +175,6 @@ class _LoginScreenState extends State<LoginScreen> {
       await prefs.setBool("isLoggedIn", true);
       await prefs.setString("loggedInUser", username);
 
-
       setState(() {
         _isLoggedIn = true;
         _loggedInUser = username;
@@ -185,19 +184,16 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-
   Future<void> _logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove("isLoggedIn");
     await prefs.remove("loggedInUser");
-
 
     setState(() {
       _isLoggedIn = false;
       _loggedInUser = null;
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -208,7 +204,6 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-
 
   Widget _buildLoginSection() {
     return SingleChildScrollView(
@@ -231,7 +226,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-
   Widget _buildCreateAccountSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -248,7 +242,6 @@ class _LoginScreenState extends State<LoginScreen> {
       ],
     );
   }
-
 
   Widget _buildLoginSectionFields() {
     return Column(
@@ -277,7 +270,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-
   Widget _buildUserInfo() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -302,7 +294,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-
 class HomeScreen extends StatelessWidget {
   void _logout(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -312,7 +303,6 @@ class HomeScreen extends StatelessWidget {
       MaterialPageRoute(builder: (context) => InitialScreen()),
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -342,6 +332,43 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
+
+class CalTrackerScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Cal-Tracker')),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            TextField(
+              decoration: InputDecoration(
+                labelText: 'Enter Calories Consumed',
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.number,
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => InitialScreen()),
+                );
+              },
+              child: Text('Back to Home'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
 class AboutUsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -356,12 +383,13 @@ class AboutUsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildSectionTitle("Our Goal"),
-            _buildParagraph("Change this as you'd like"),
+            _buildParagraph("Welcome to NutriNote! Our goal is to help people that have problems losing weight properly, track calories, and achieving their goals effectively. We want to make the process of weight-loss easier and less daunting so that we can all live long, healthy lives."),
             Divider(),
             _buildSectionTitle("Who We Are"),
-            _buildParagraph("Change this as you'd like"),
+            _buildParagraph("Advanced Technologies Academy - 1411 Robin St, Las Vegas, NV 89106"),
+            _buildParagraph("NutriNote is an app developed by a dedicated team of highschool students who are investigating how to properly lose weight without it being too exhausting or having a negative impact on one's health."),
             SizedBox(height: 10),
-            /*
+            /* 
             Center(
               child: Image.asset(
                 'assets/logo.png',
@@ -373,10 +401,10 @@ class AboutUsScreen extends StatelessWidget {
             Divider(),
             _buildSectionTitle("Developers"),
             _buildBulletList([
-              "Developer 1",
-              "Developer 2",
-              "Developer 3",
-              "Developer 4",
+              "Jaden Krejsa", 
+              "Nikkita Malyarov",
+              "Rahz Nyanffor",
+              "Fernando Landeros Munoz",
             ]),
           ],
         ),
@@ -392,14 +420,12 @@ class AboutUsScreen extends StatelessWidget {
     );
   }
 
-
   Widget _buildParagraph(String text) {
     return Text(
       text,
       style: TextStyle(fontSize: 16),
     );
   }
-
 
   Widget _buildBulletList(List<String> items) {
     return Column(
